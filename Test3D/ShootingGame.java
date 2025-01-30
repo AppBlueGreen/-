@@ -102,9 +102,9 @@ public class ShootingGame extends JPanel implements ActionListener, KeyListener 
         g2d.drawImage(backgrounds[index], 0, -5, WIDTH, HEIGHT + 5, null);
 
         // 敵を描画
-        g2d.setColor(Color.RED);
+        // g2d.setColor(Color.RED);
         for (Enemy enemy : enemies) {
-            g2d.fillOval((int) enemy.pos.getX() / 7 + 20, (int) enemy.pos.getY() / 7 + 20, enemy.size / 7 , enemy.size / 7 );
+            // g2d.fillOval((int) enemy.pos.getX() / 7 + 20, (int) enemy.pos.getY() / 7 + 20, enemy.size / 7 , enemy.size / 7 );
             // enemy.pos = enemy.pos.add(new Vec(0, 1)); // 敵を下に動かす
             if(enemy.pos.sub(player.getPos()).mag() < 15){
                 continue;
@@ -122,6 +122,15 @@ public class ShootingGame extends JPanel implements ActionListener, KeyListener 
         }
         draw3DWalls(g2d, wallHits, player, fov, enemies, bullets);
         g2d.drawImage(gun, (WIDTH / 2) + 120, (HEIGHT / 2) - 250, 600, 600, null);
+
+
+        g2d.setColor(new Color(34, 139, 34)); // 水色 (スカイブルー)
+        g2d.fillRect(20, 20, WIDTH / 7, HEIGHT / 7);
+
+        g2d.setColor(Color.RED);
+        for (Enemy enemy : enemies) {
+            g2d.fillOval((int) enemy.pos.getX() / 7 + 20, (int) enemy.pos.getY() / 7 + 20, enemy.size / 7 , enemy.size / 7 );
+        }  
 
         // beamを描画
         g2d.setColor(Color.GRAY);
@@ -141,7 +150,7 @@ public class ShootingGame extends JPanel implements ActionListener, KeyListener 
                          (int) wall.getEnd(1).getX() / 7 + 20, (int) wall.getEnd(1).getY() / 7 + 20);
         }
         // フィールドの限界を描画
-        g2d.setColor(Color.WHITE);
+        g2d.setColor(Color.BLACK);
         g2d.setStroke(new BasicStroke(3));
         for (Ray wall : fieldWalls) {
             g2d.drawLine((int) wall.getBegin().getX() / 7 + 20, (int) wall.getBegin().getY() / 7 + 20,
@@ -246,6 +255,7 @@ public class ShootingGame extends JPanel implements ActionListener, KeyListener 
             int wallY2 = (int)(screenCenterY - wallHeight / 2);
             if(wallHit.wallNumber == 1){
                 wallY2 = (int)(screenCenterY - wallHeight * 5);
+                // wallY2 = wallY1;
                 g2d.setColor(wallHit.color);
                 g2d.drawLine((int) (getWidth() / 2 + (wallHit.angle - player.getAngle()) * getWidth() / fov), wallY1,
                              (int) (getWidth() / 2 + (wallHit.angle - player.getAngle()) * getWidth() / fov), wallY2);
@@ -266,7 +276,7 @@ public class ShootingGame extends JPanel implements ActionListener, KeyListener 
                              (int) (getWidth() / 2 + (wallHit.angle - player.getAngle()) * getWidth() / fov), wallY2);
             }
             // if(wallHit.wallNumber == 4){
-            //     wallY2 = (int)(screenCenterY - wallHeight * (ビルの高さ));
+            //     wallY2 = (int)(screenCenterY - wallHeight * (ビルの高さ));　
             //     g2d.setColor(wallHit.color);
             //     g2d.drawLine((int) (getWidth() / 2 + (wallHit.angle - player.getAngle()) * getWidth() / fov), wallY1,
             //                  (int) (getWidth() / 2 + (wallHit.angle - player.getAngle()) * getWidth() / fov), wallY2);
@@ -414,6 +424,27 @@ class Enemy {
 
     public Enemy(Vec pos) {
         this.pos = pos;
+    }
+}
+class Road {
+    Vec pos;
+    int height;
+    int width;
+    Color color;
+    ArrayList<Ray> lines = new ArrayList<>();
+
+    Road(Vec pos, int height, int width, Color color){
+        this.pos = pos;
+        this.height = height;
+        this.width = width;
+        this.color = color;
+
+        Vec dir = new Vec(0, width);
+
+        for(int i = 0; i < height; i++){
+            Vec upPos = new Vec(pos.getX() + i, pos.getY());
+            lines.add(new Ray(upPos, dir));
+        }
     }
 }
 class Ray {
